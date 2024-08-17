@@ -18,7 +18,4 @@ jobs:
           node-version: 22.x
           cache: "npm"
       - run: npm ci
-      - run: |
-          cd scripts
-          npm ci
       - run: npm run check

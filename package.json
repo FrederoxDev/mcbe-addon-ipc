@@ -1,11 +1,21 @@
 {
-  "private": true,
+  "name": "mcbe-addon-ipc",
+  "description": "IPC utilities for Minecraft Bedrock add-ons",
+  "version": "0.1.0",
+  "author": "Fluffyalien",
+  "repository": "https://github.com/Fluffyalien1422/mcbe-addon-ipc",
+  "license": "ISC",
   "type": "module",
+  "main": "dist/index.js",
   "scripts": {
+    "build": "tsc",
     "fmt": "prettier . -w",
     "check": "tsc --noEmit && eslint .",
     "fmt-check": "npm run fmt && npm run check"
   },
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "@eslint/js": "^9.9.0",
     "@minecraft/server": "1.15.0-beta.1.21.30-preview.21",

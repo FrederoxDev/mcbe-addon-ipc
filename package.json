@@ -11,7 +11,8 @@
     "build": "tsc",
     "fmt": "prettier . -w",
     "check": "tsc --noEmit && eslint .",
-    "fmt-check": "npm run fmt && npm run check"
+    "fmt-check": "npm run fmt && npm run check",
+    "gen-docs": "typedoc --out docs --excludeInternal src"
   },
   "files": [
     "dist"

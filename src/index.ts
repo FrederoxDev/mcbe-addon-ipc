@@ -10,7 +10,15 @@ export const MAX_MESSAGE_LENGTH = 428;
 export const MAX_NAMESPACE_LENGTH = 30;
 export const MAX_EVENT_ID_LENGTH = 70;
 
+/**
+ * Message padding for handler messages.
+ * Ensure you allow this much padding in your handler messages, otherwise an error may be thrown.
+ */
 export const HANDLER_MESSAGE_PADDING = MAX_NAMESPACE_LENGTH + 25;
+
+/**
+ * Message padding for stream messages. This is automatically accounted for by {@link streamScriptEvent}.
+ */
 export const STREAM_MESSAGE_PADDING = MAX_NAMESPACE_LENGTH + 5;
 
 const overworld = world.getDimension("overworld");
@@ -41,6 +49,14 @@ function eventHasAnythingRegistered(event: string): boolean {
   );
 }
 
+/**
+ * Registers a script event listener. This is one-way event, nothing will be returned to the sender.
+ * Use {@link registerScriptEventHandler} to register a two-way event handler.
+ * @param event The event ID.
+ * @param callback The callback.
+ * @throws Throws if another listener, stream listener, or handler is registered for `event`.
+ * @throws Throws if the event ID is longer than {@link MAX_EVENT_ID_LENGTH}
+ */
 export function registerScriptEventListener<TPayload>(
   event: string,
   callback: ScriptEventListener<TPayload>
@@ -58,10 +74,24 @@ export function registerScriptEventListener<TPayload>(
   listeners.set(event, callback);
 }
 
+/**
+ * Removes a listener for an event.
+ * @param event The event ID.
+ * @returns Returns a boolean indicating whether the listener was removed or not.
+ */
 export function removeScriptEventListener(event: string): boolean {
   return listeners.delete(event);
 }
 
+/**
+ * Registers a script event stream listener. This is one-way event, nothing will be returned to the sender.
+ * Use {@link registerScriptEventListener} to register a non-stream listener.
+ * Use {@link registerScriptEventHandler} to register a two-way event handler.
+ * @param event The event ID.
+ * @param callback The callback.
+ * @throws Throws if another listener, stream listener, or handler is registered for `event`.
+ * @throws Throws if the event ID is longer than {@link MAX_EVENT_ID_LENGTH}
+ */
 export function registerScriptEventStreamListener<TPayload>(
   event: string,
   callback: ScriptEventListener<TPayload>
@@ -79,10 +109,23 @@ export function registerScriptEventStreamListener<TPayload>(
   streamListeners.set(event, callback);
 }
 
+/**
+ * Removes a stream listener for an event.
+ * @param event The event ID.
+ * @returns Returns a boolean indicating whether the stream listener was removed or not.
+ */
 export function removeScriptEventStreamListener(event: string): boolean {
   return streamListeners.delete(event);
 }
 
+/**
+ * Registers a script event handler. This is two-way event, whatever the callback returns will be returned to the sender.
+ * Use {@link registerScriptEventListener} to register a one-way event listener.
+ * @param event The event ID.
+ * @param callback The callback.
+ * @throws Throws if another listener, stream listener, or handler is registered for `event`.
+ * @throws Throws if the event ID is longer than {@link MAX_EVENT_ID_LENGTH}
+ */
 export function registerScriptEventHandler<TPayload, TResponse>(
   event: string,
   callback: ScriptEventHandler<TPayload, TResponse>
@@ -100,14 +143,33 @@ export function registerScriptEventHandler<TPayload, TResponse>(
   handlers.set(event, callback);
 }
 
+/**
+ * Removes a handler for an event.
+ * @param event The event ID.
+ * @returns Returns a boolean indicating whether the handler was removed or not.
+ */
 export function removeScriptEventHandler(event: string): boolean {
   return handlers.delete(event);
 }
 
+/**
+ * Dispatch a script event without performing any checks.
+ * In most cases, use {@link dispatchScriptEvent} instead.
+ */
 export function dispatchScriptEventRaw(event: string, message: string): void {
   overworld.runCommand(`scriptevent ${event} ${message}`);
 }
 
+/**
+ * Dispatch a script event.
+ * Use {@link invokeScriptEvent} to call a handler.
+ * Use {@link streamScriptEvent} to call a stream listener.
+ * @param event The event ID.
+ * @param payload The payload. Ensure this can be serialized to JSON, otherwise some data may be lost.
+ * @param force Ignore errors.
+ * @throws Throws if the event ID is longer than {@link MAX_EVENT_ID_LENGTH}
+ * @throws Throws if the serialized payload is longer than {@link MAX_MESSAGE_LENGTH}
+ */
 export function dispatchScriptEvent(
   event: string,
   payload: unknown,
@@ -135,6 +197,18 @@ export function dispatchScriptEvent(
 // total number of invokes this session, used to create a unique response listener ID
 let invokeCount = 0;
 
+/**
+ * Invoke a script event handler.
+ * Use {@link dispatchScriptEvent} to call a listener.
+ * Use {@link streamScriptEvent} to call a stream listener.
+ * @param event The event ID.
+ * @param namespace The namespace of this add-on. Used to create a response listener ID.
+ * @param payload The payload. Ensure this can be serialized to JSON, otherwise some data may be lost.
+ * @param force Ignore errors, not including timeout.
+ * @returns Returns whatever the handler returns.
+ * @throws Throws if the namespace is longer than {@link MAX_NAMESPACE_LENGTH}.
+ * @throws Throws if a response is not recieved within 20 game ticks.
+ */
 export async function invokeScriptEvent(
   event: string,
   namespace: string,
@@ -180,6 +254,16 @@ export async function invokeScriptEvent(
 // total number of streams this session, used to create a unique stream ID
 let streamCount = 0;
 
+/**
+ * Streams the payload to a stream listener. The payload has no max length, since it is streamed.
+ * Use {@link dispatchScriptEvent} to call a listener.
+ * Use {@link invokeScriptEvent} to call a handler.
+ * @param event The event ID.
+ * @param namespace The namespace of this add-on. Used to create a response listener ID.
+ * @param payload The payload. Ensure this can be serialized to JSON, otherwise some data may be lost.
+ * @param force Ignore errors.
+ * @throws Throws if the namespace is longer than {@link MAX_NAMESPACE_LENGTH}
+ */
 export function* streamScriptEvent(
   event: string,
   namespace: string,

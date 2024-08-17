@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "author": "Fluffyalien",
   "repository": "https://github.com/Fluffyalien1422/mcbe-addon-ipc",
+  "readme": "https://fluffyalien1422.github.io/mcbe-addon-ipc/",
   "license": "ISC",
   "type": "module",
   "main": "dist/index.js",

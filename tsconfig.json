@@ -3,11 +3,11 @@
   "compilerOptions": {
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "target": "es2022",
-    "module": "es2022",
-    "moduleResolution": "bundler",
-    "skipLibCheck": true,
     "declaration": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "skipLibCheck": true
   }
 }

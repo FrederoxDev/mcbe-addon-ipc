@@ -1,3 +1,4 @@
+import { SerializableValue } from "./common.js";
 import { MAX_EVENT_ID_LENGTH } from "./constants.js";
 
 export type ScriptEventListener<TPayload, TResponse> = (
@@ -7,7 +8,10 @@ export type ScriptEventListener<TPayload, TResponse> = (
 /**
  * @internal
  */
-export const listeners = new Map<string, ScriptEventListener<any, unknown>>();
+export const listeners = new Map<
+  string,
+  ScriptEventListener<any, SerializableValue>
+>();
 
 /**
  * Registers an IPC listener.
@@ -16,10 +20,10 @@ export const listeners = new Map<string, ScriptEventListener<any, unknown>>();
  * @throws Throws if another listener is registered for `event`.
  * @throws Throws if the event ID is longer than {@link MAX_EVENT_ID_LENGTH}
  */
-export function registerListener<TPayload, TResponse>(
-  event: string,
-  callback: ScriptEventListener<TPayload, TResponse>
-): void {
+export function registerListener<
+  TPayload extends SerializableValue,
+  TResponse extends SerializableValue,
+>(event: string, callback: ScriptEventListener<TPayload, TResponse>): void {
   if (listeners.has(event)) {
     throw new Error(
       `can't register listener for event '${event}': a listener for this event has already been registered`

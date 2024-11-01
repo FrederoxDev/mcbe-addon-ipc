@@ -1,7 +1,7 @@
 import { system } from "@minecraft/server";
 import { registerListener, removeListener } from "./listeners.js";
 import { sendInternal, sendStreamInternal } from "./send.js";
-import { IpcTypeFlag } from "./common.js";
+import { IpcTypeFlag, SerializableValue } from "./common.js";
 import { getNamespace } from "./init.js";
 import { MAX_MESSAGE_LENGTH } from "./constants.js";
 
@@ -18,7 +18,7 @@ function invokeInternal(
   event: string,
   payload: string,
   force = false
-): Promise<unknown> {
+): Promise<SerializableValue> {
   const namespace = getNamespace();
 
   // rl stands for response listener - we want to keep the event IDs short
@@ -38,6 +38,7 @@ function invokeInternal(
       removeListener(responseListenerId);
       system.clearRun(timeoutId);
       resolve(payload);
+      return null;
     });
 
     sendInternal(
@@ -59,9 +60,9 @@ function invokeInternal(
  */
 export function invoke(
   event: string,
-  payload: unknown,
+  payload: SerializableValue,
   force = false
-): Promise<unknown> {
+): Promise<SerializableValue> {
   return invokeInternal(event, JSON.stringify(payload), force);
 }
 
@@ -72,7 +73,7 @@ function invokeStreamInternal(
   event: string,
   payload: string,
   force = false
-): Promise<unknown> {
+): Promise<SerializableValue> {
   const namespace = getNamespace();
 
   const responseListenerId = `${namespace}:ipc.__rl${invokeCount.toString()}`;
@@ -87,6 +88,7 @@ function invokeStreamInternal(
         system.clearRun(timeoutId);
       }
       resolve(payload);
+      return null;
     });
 
     void sendStreamInternal(
@@ -115,9 +117,9 @@ function invokeStreamInternal(
  */
 export function invokeStream(
   event: string,
-  payload: unknown,
+  payload: SerializableValue,
   force = false
-): Promise<unknown> {
+): Promise<SerializableValue> {
   return invokeStreamInternal(event, JSON.stringify(payload), force);
 }
 
@@ -133,9 +135,9 @@ export function invokeStream(
  */
 export function invokeAuto(
   event: string,
-  payload: unknown,
+  payload: SerializableValue,
   force = false
-): Promise<unknown> {
+): Promise<SerializableValue> {
   const serialized = JSON.stringify(payload);
   if (serialized.length > MAX_MESSAGE_LENGTH) {
     return invokeStreamInternal(event, serialized, force);

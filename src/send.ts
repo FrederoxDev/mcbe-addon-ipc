@@ -1,5 +1,5 @@
 import { system } from "@minecraft/server";
-import { IpcTypeFlag, overworld } from "./common.js";
+import { IpcTypeFlag, overworld, SerializableValue } from "./common.js";
 import {
   MAX_EVENT_ID_LENGTH,
   MAX_MESSAGE_LENGTH,
@@ -48,7 +48,11 @@ export function sendInternal(
  * @throws Throws if the event ID is longer than {@link MAX_EVENT_ID_LENGTH}
  * @throws Throws if the serialized payload is longer than {@link MAX_MESSAGE_LENGTH}
  */
-export function send(event: string, payload: unknown, force = false): void {
+export function send(
+  event: string,
+  payload: SerializableValue,
+  force = false
+): void {
   sendInternal(IpcTypeFlag.Send, event, JSON.stringify(payload), force);
 }
 
@@ -133,7 +137,7 @@ export function sendStreamInternal(
  */
 export function sendStream(
   event: string,
-  payload: unknown,
+  payload: SerializableValue,
   force = false
 ): Promise<void> {
   return sendStreamInternal(
@@ -154,7 +158,7 @@ export function sendStream(
  */
 export async function sendAuto(
   event: string,
-  payload: unknown,
+  payload: SerializableValue,
   force = false
 ): Promise<void> {
   const serialized = JSON.stringify(payload);

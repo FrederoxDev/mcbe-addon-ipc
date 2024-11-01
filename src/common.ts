@@ -14,3 +14,15 @@ export enum IpcTypeFlag {
   Invoke = "2",
   InvokeStream = "3",
 }
+
+/**
+ * Values that can be serialized and sent using IPC.
+ * Note that this is not completely typesafe.
+ */
+export type SerializableValue =
+  | string
+  | number
+  | boolean
+  | null
+  | Record<string, unknown>
+  | SerializableValue[];

@@ -25,7 +25,6 @@ export default tseslint.config(
     rules: {
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/explicit-function-return-type": "error",
       "@typescript-eslint/switch-exhaustiveness-check": "error",
     },

@@ -1,6 +1,6 @@
 import { system } from "@minecraft/server";
 import { listeners } from "./listeners.js";
-import { IpcTypeFlag } from "./common.js";
+import { IpcTypeFlag, SerializableValue } from "./common.js";
 import { send } from "./send.js";
 
 /**
@@ -20,13 +20,13 @@ system.afterEvents.scriptEventReceive.subscribe((e) => {
   const message = e.message.slice(1);
 
   if (ipcTypeFlag === IpcTypeFlag.Send) {
-    listener(JSON.parse(message));
+    listener(JSON.parse(message) as SerializableValue);
     return;
   }
 
   if (ipcTypeFlag === IpcTypeFlag.Invoke) {
     const [responseEvent, payload] = message.split(/ (.*)/);
-    const response = listener(JSON.parse(payload));
+    const response = listener(JSON.parse(payload) as SerializableValue);
     send(responseEvent, response);
   }
 
@@ -52,11 +52,11 @@ system.afterEvents.scriptEventReceive.subscribe((e) => {
 
     if (ipcTypeFlag === IpcTypeFlag.InvokeStream) {
       const [responseEvent, payload] = fullContent.split(/ (.*)/);
-      const response = listener(JSON.parse(payload));
+      const response = listener(JSON.parse(payload) as SerializableValue);
       send(responseEvent, response);
       return;
     }
 
-    listener(JSON.parse(fullContent));
+    listener(JSON.parse(fullContent) as SerializableValue);
   }
 });

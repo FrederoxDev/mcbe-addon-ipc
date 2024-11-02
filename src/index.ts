@@ -1,8 +1,10 @@
 import "./router.js";
 
-export * from "./init.js";
-
-export { SerializableValue } from "./common.js";
+export {
+  SerializableValue,
+  SendOptions,
+  SendOptionsWithNamespace,
+} from "./common.js";
 export {
   MAX_MESSAGE_LENGTH,
   MAX_NAMESPACE_LENGTH,

@@ -15,7 +15,7 @@ export const listeners = new Map<string, ScriptEventListener>();
  * @param event The event ID.
  * @param callback The callback.
  * @throws Throws if another listener is registered for `event`.
- * @throws Throws if the event ID is longer than {@link MAX_EVENT_ID_LENGTH}
+ * @throws Throws if the event ID is too long.
  */
 export function registerListener(
   event: string,

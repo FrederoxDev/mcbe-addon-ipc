@@ -27,7 +27,10 @@ system.afterEvents.scriptEventReceive.subscribe((e) => {
   if (ipcTypeFlag === IpcTypeFlag.Invoke) {
     const [responseEvent, payload] = message.split(/ (.*)/);
     const response = listener(JSON.parse(payload) as SerializableValue);
-    send(responseEvent, response);
+    send({
+      event: responseEvent,
+      payload: response,
+    });
   }
 
   if (
@@ -53,7 +56,10 @@ system.afterEvents.scriptEventReceive.subscribe((e) => {
     if (ipcTypeFlag === IpcTypeFlag.InvokeStream) {
       const [responseEvent, payload] = fullContent.split(/ (.*)/);
       const response = listener(JSON.parse(payload) as SerializableValue);
-      send(responseEvent, response);
+      send({
+        event: responseEvent,
+        payload: response,
+      });
       return;
     }
 

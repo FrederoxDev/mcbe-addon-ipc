@@ -1,4 +1,5 @@
 import { world } from "@minecraft/server";
+import { MAX_NAMESPACE_LENGTH } from "./constants.js";
 
 /**
  * @internal
@@ -15,8 +16,55 @@ export enum IpcTypeFlag {
   InvokeStream = "3",
 }
 
+export interface SendOptions {
+  /**
+   * The event ID.
+   */
+  event: string;
+  /**
+   * The payload. Ensure this can be serialized to JSON, otherwise some data may be lost.
+   */
+  payload: SerializableValue;
+  /**
+   * Ignore (most) errors.
+   */
+  force?: boolean;
+}
+
+export interface SendOptionsWithNamespace extends SendOptions {
+  /**
+   * The namespace of this add-on. Used to create response listener IDs or stream IDs.
+   */
+  namespace: string;
+}
+
+/**
+ * @internal
+ */
+export interface InternalSendOptions extends SendOptions {
+  payload: string;
+}
+
+/**
+ * @internal
+ */
+export interface InternalSendOptionsWithNamespace extends InternalSendOptions {
+  namespace: string;
+}
+
 /**
  * Values that can be serialized and sent using IPC.
  * Note that this is not completely typesafe.
  */
 export type SerializableValue = string | number | boolean | null | object;
+
+/**
+ * @internal
+ */
+export function checkNamespace(namespace: string): void {
+  if (!namespace || namespace.length > MAX_NAMESPACE_LENGTH) {
+    throw new Error(
+      `Namespace must be at least one character and less than ${MAX_NAMESPACE_LENGTH.toString()} characters.`
+    );
+  }
+}

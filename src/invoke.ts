@@ -24,8 +24,6 @@ function invokeInternal(
 ): Promise<SerializableValue> {
   checkNamespace(options.namespace);
 
-  // rl stands for response listener - we want to keep the event IDs short
-  // because there is a command length limit
   const responseListenerId = `${options.namespace}:ipc.__rl${invokeCount.toString()}`;
   invokeCount++;
 
@@ -58,7 +56,6 @@ function invokeInternal(
  * @returns Returns whatever the listener returns.
  * @throws Throws if a response is not recieved within 20 game ticks.
  * @throws Throws if the namespace is too long.
- * @throws Throws if the event ID is too long.
  * @throws Throws if the message is too long.
  */
 export function invoke(
@@ -117,7 +114,6 @@ function invokeStreamInternal(
  * @returns Returns whatever the listener returns.
  * @throws Throws if a response is not recieved within 20 game ticks (after the entire payload has been streamed).
  * @throws Throws if the namespace is too long.
- * @throws Throws if the event ID is too long.
  * @throws Throws if the message is too long.
  */
 export function invokeStream(
@@ -134,7 +130,6 @@ export function invokeStream(
  * @returns Returns whatever the target listener returns.
  * @throws Throws if a response is not recieved within 20 game ticks (after the entire payload has been streamed).
  * @throws Throws if the namespace is too long.
- * @throws Throws if the event ID is too long.
  * @throws Throws if the message is too long.
  */
 export function invokeAuto(

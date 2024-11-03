@@ -7,11 +7,7 @@ import {
   SendOptions,
   SendOptionsWithNamespace,
 } from "./common.js";
-import {
-  MAX_EVENT_ID_LENGTH,
-  MAX_MESSAGE_LENGTH,
-  STREAM_MESSAGE_PADDING,
-} from "./constants.js";
+import { MAX_MESSAGE_LENGTH, STREAM_MESSAGE_PADDING } from "./constants.js";
 
 /**
  * @internal
@@ -28,12 +24,6 @@ export function sendInternal(
   options: InternalSendOptions
 ): void {
   if (!options.force) {
-    if (options.event.length > MAX_EVENT_ID_LENGTH) {
-      throw new Error(
-        `can't send event '${options.event}' as the event ID is more than ${MAX_EVENT_ID_LENGTH.toString()}`
-      );
-    }
-
     if (options.payload.length > MAX_MESSAGE_LENGTH) {
       throw new Error(
         `can't send event with a message longer than ${MAX_MESSAGE_LENGTH.toString()} characters`
@@ -46,7 +36,6 @@ export function sendInternal(
 
 /**
  * Send a one-way IPC event.
- * @throws Throws if the event ID is too long.
  * @throws Throws if the message is too long.
  */
 export function send(options: SendOptions): void {
@@ -144,7 +133,6 @@ export function sendStream(options: SendOptionsWithNamespace): Promise<void> {
 
 /**
  * Send or stream a one-way IPC event. If the payload is greater than the max length then it will be streamed.
- * @throws Throws if the event ID is too long.
  * @throws Throws if the message is too long.
  */
 export async function sendAuto(

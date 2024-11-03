@@ -5,11 +5,7 @@ export {
   SendOptions,
   SendOptionsWithNamespace,
 } from "./common.js";
-export {
-  MAX_MESSAGE_LENGTH,
-  MAX_NAMESPACE_LENGTH,
-  MAX_EVENT_ID_LENGTH,
-} from "./constants.js";
+export { MAX_MESSAGE_LENGTH, MAX_NAMESPACE_LENGTH } from "./constants.js";
 export { invoke, invokeStream, invokeAuto } from "./invoke.js";
 export {
   ScriptEventListener,

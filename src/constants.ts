@@ -5,11 +5,12 @@
 export const MAX_MESSAGE_LENGTH = 2047;
 
 /**
- * Max namespace length.
+ * Max router UID length.
+ * @see {@link Router.uid}
  */
-export const MAX_NAMESPACE_LENGTH = 48;
+export const MAX_ROUTER_UID_LENGTH = 48;
 
 /**
  * @internal
  */
-export const STREAM_MESSAGE_PADDING = MAX_NAMESPACE_LENGTH + 10;
+export const STREAM_MESSAGE_PADDING = MAX_ROUTER_UID_LENGTH + 10;

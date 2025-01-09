@@ -4,7 +4,6 @@ import {
   IpcTypeFlag,
   overworld,
   SendOptions,
-  SendOptionsWithNamespace,
 } from "./common.js";
 import { MAX_MESSAGE_LENGTH, STREAM_MESSAGE_PADDING } from "./constants.js";
 
@@ -34,8 +33,7 @@ export function sendInternal(
 }
 
 /**
- * Send a one-way IPC event.
- * @throws Throws if the message is too long.
+ * @internal
  */
 export function send(options: SendOptions): void {
   sendInternal(IpcTypeFlag.Send, {
@@ -43,9 +41,6 @@ export function send(options: SendOptions): void {
     payload: JSON.stringify(options.payload),
   });
 }
-
-// total number of streams this session, used to create a unique stream ID
-let streamCount = 0;
 
 /**
  * @internal
@@ -81,12 +76,9 @@ export function sendStreamInternal(
   flag: IpcTypeFlag,
   event: string,
   payload: string,
-  namespace: string,
+  streamId: string,
   force = false
 ): Promise<void> {
-  const streamId = namespace + streamCount.toString();
-  streamCount++;
-
   const parts = [payload];
 
   const maxMessageLengthWithPadding =
@@ -116,36 +108,17 @@ export function sendStreamInternal(
 }
 
 /**
- * Stream a one-way IPC event. The payload has no max length, since it is streamed.
+ * @internal
  */
-export function sendStream(options: SendOptionsWithNamespace): Promise<void> {
+export function sendStream(
+  options: SendOptions,
+  streamId: string
+): Promise<void> {
   return sendStreamInternal(
     IpcTypeFlag.SendStream,
     options.event,
     JSON.stringify(options.payload),
-    options.namespace,
+    streamId,
     options.force
   );
-}
-
-/**
- * Send or stream a one-way IPC event. If the payload is greater than the max length then it will be streamed.
- */
-export async function sendAuto(
-  options: SendOptionsWithNamespace
-): Promise<void> {
-  const serialized = JSON.stringify(options.payload);
-  if (serialized.length > MAX_MESSAGE_LENGTH) {
-    return sendStreamInternal(
-      IpcTypeFlag.SendStream,
-      options.event,
-      serialized,
-      options.namespace,
-      options.force
-    );
-  }
-  sendInternal(IpcTypeFlag.Send, {
-    ...options,
-    payload: serialized,
-  });
 }

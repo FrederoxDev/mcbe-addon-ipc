@@ -1,6 +1,5 @@
 import { system } from "@minecraft/server";
 import {
-  checkNamespace,
   InternalSendOptions,
   IpcTypeFlag,
   overworld,
@@ -85,8 +84,6 @@ export function sendStreamInternal(
   namespace: string,
   force = false
 ): Promise<void> {
-  checkNamespace(namespace);
-
   const streamId = namespace + streamCount.toString();
   streamCount++;
 
@@ -133,7 +130,6 @@ export function sendStream(options: SendOptionsWithNamespace): Promise<void> {
 
 /**
  * Send or stream a one-way IPC event. If the payload is greater than the max length then it will be streamed.
- * @throws Throws if the message is too long.
  */
 export async function sendAuto(
   options: SendOptionsWithNamespace

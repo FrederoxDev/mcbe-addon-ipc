@@ -38,6 +38,13 @@ export interface SendOptionsWithNamespace extends SendOptions {
   namespace: string;
 }
 
+export interface InvokeOptions extends SendOptionsWithNamespace {
+  /**
+   * If `true`, {@link Failure}s will be thrown rather than returned.
+   */
+  throwFailures?: boolean;
+}
+
 /**
  * @internal
  */
@@ -50,6 +57,13 @@ export interface InternalSendOptions extends SendOptions {
  */
 export interface InternalSendOptionsWithNamespace extends InternalSendOptions {
   namespace: string;
+}
+
+/**
+ * @internal
+ */
+export interface InternalInvokeOptions extends InvokeOptions {
+  payload: string;
 }
 
 /**

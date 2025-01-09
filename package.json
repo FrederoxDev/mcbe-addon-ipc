@@ -14,9 +14,9 @@
   "scripts": {
     "build": "tsc",
     "fmt": "prettier . -w",
-    "check": "tsc --noEmit && eslint .",
+    "check": "tsc --noEmit && eslint . && typedoc src --excludeInternal --emit none",
     "fmt-check": "npm run fmt && npm run check",
-    "gen-docs": "typedoc --out docs --excludeInternal src"
+    "gen-docs": "typedoc src --excludeInternal --out docs"
   },
   "types": "dist/index.d.ts",
   "files": [

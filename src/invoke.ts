@@ -3,12 +3,13 @@ import { registerListener, removeListener } from "./listeners.js";
 import { sendInternal, sendStreamInternal } from "./send.js";
 import {
   checkNamespace,
-  InternalSendOptionsWithNamespace,
+  InternalInvokeOptions,
+  InvokeOptions,
   IpcTypeFlag,
-  SendOptionsWithNamespace,
   SerializableValue,
 } from "./common.js";
 import { MAX_MESSAGE_LENGTH } from "./constants.js";
+import { Failure } from "./failure.js";
 
 /**
  * total number of invokes this session, used to create a unique response listener ID
@@ -20,7 +21,7 @@ let invokeCount = 0;
  * @internal
  */
 function invokeInternal(
-  options: InternalSendOptionsWithNamespace
+  options: InternalInvokeOptions
 ): Promise<SerializableValue> {
   checkNamespace(options.namespace);
 
@@ -40,7 +41,13 @@ function invokeInternal(
     registerListener(responseListenerId, (payload) => {
       removeListener(responseListenerId);
       system.clearRun(timeoutId);
-      resolve(payload);
+
+      if (payload instanceof Failure && options.throwFailures) {
+        reject(payload);
+      } else {
+        resolve(payload);
+      }
+
       return null;
     });
 
@@ -58,9 +65,7 @@ function invokeInternal(
  * @throws Throws if the namespace is too long.
  * @throws Throws if the message is too long.
  */
-export function invoke(
-  options: SendOptionsWithNamespace
-): Promise<SerializableValue> {
+export function invoke(options: InvokeOptions): Promise<SerializableValue> {
   return invokeInternal({
     ...options,
     payload: JSON.stringify(options.payload),
@@ -71,7 +76,7 @@ export function invoke(
  * @internal
  */
 function invokeStreamInternal(
-  options: InternalSendOptionsWithNamespace
+  options: InternalInvokeOptions
 ): Promise<SerializableValue> {
   checkNamespace(options.namespace);
 
@@ -86,7 +91,13 @@ function invokeStreamInternal(
       if (timeoutId !== undefined) {
         system.clearRun(timeoutId);
       }
-      resolve(payload);
+
+      if (payload instanceof Failure && options.throwFailures) {
+        reject(payload);
+      } else {
+        resolve(payload);
+      }
+
       return null;
     });
 
@@ -117,7 +128,7 @@ function invokeStreamInternal(
  * @throws Throws if the message is too long.
  */
 export function invokeStream(
-  options: SendOptionsWithNamespace
+  options: InvokeOptions
 ): Promise<SerializableValue> {
   return invokeStreamInternal({
     ...options,
@@ -130,11 +141,8 @@ export function invokeStream(
  * @returns Returns whatever the target listener returns.
  * @throws Throws if a response is not recieved within 20 game ticks (after the entire payload has been streamed).
  * @throws Throws if the namespace is too long.
- * @throws Throws if the message is too long.
  */
-export function invokeAuto(
-  options: SendOptionsWithNamespace
-): Promise<SerializableValue> {
+export function invokeAuto(options: InvokeOptions): Promise<SerializableValue> {
   const serialized = JSON.stringify(options.payload);
   if (serialized.length > MAX_MESSAGE_LENGTH) {
     return invokeStreamInternal({ ...options, payload: serialized });

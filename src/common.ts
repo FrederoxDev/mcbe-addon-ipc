@@ -59,4 +59,6 @@ export type SerializableValue = string | number | boolean | null | object;
 
 export type ScriptEventListener = (
   payload: SerializableValue
-) => SerializableValue;
+  // technically SerializableValue can already be Promise
+  // but we need to explicitly allow promise here to make eslint happy
+) => SerializableValue | Promise<SerializableValue>;

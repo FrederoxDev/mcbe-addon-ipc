@@ -204,18 +204,18 @@ export class Router {
     return payload;
   }
 
-  private invokeListener(
+  private async invokeListener(
     listener: ScriptEventListener,
     responseEvent: string,
     rawPayload: string
-  ): void {
+  ): Promise<void> {
     const payload = this.parseRawPayload(rawPayload);
 
     let response: SerializableValue = null;
     let err;
 
     try {
-      response = listener(payload);
+      response = await listener(payload);
     } catch (e) {
       err = e;
     }
@@ -236,14 +236,19 @@ export class Router {
     }
   }
 
-  private callListener(
+  private async callListener(
     listener: ScriptEventListener,
     rawPayload: string
-  ): void {
+  ): Promise<void> {
     const payload = this.parseRawPayload(rawPayload);
-    const result = listener(payload);
-    if (result instanceof Failure) {
-      console.warn(result);
+
+    try {
+      const result = await listener(payload);
+      if (result instanceof Failure) {
+        console.warn(result);
+      }
+    } catch (err) {
+      console.warn(err);
     }
   }
 
@@ -259,12 +264,12 @@ export class Router {
 
     switch (ipcTypeFlag) {
       case IpcTypeFlag.Send:
-        this.callListener(listener, message);
+        void this.callListener(listener, message);
         break;
 
       case IpcTypeFlag.Invoke: {
         const [responseEvent, payload] = message.split(/ (.*)/);
-        this.invokeListener(listener, responseEvent, payload);
+        void this.invokeListener(listener, responseEvent, payload);
         break;
       }
 
@@ -288,11 +293,11 @@ export class Router {
 
         if (ipcTypeFlag === IpcTypeFlag.InvokeStream) {
           const [responseEvent, payload] = fullContent.split(/ (.*)/);
-          this.invokeListener(listener, responseEvent, payload);
+          void this.invokeListener(listener, responseEvent, payload);
           break;
         }
 
-        this.callListener(listener, fullContent);
+        void this.callListener(listener, fullContent);
 
         break;
       }

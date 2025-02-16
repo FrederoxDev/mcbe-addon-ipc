@@ -74,16 +74,23 @@ export class Router {
 
   /**
    * Registers an IPC listener.
-   * @param event The event ID.
+   * @param event The listener ID.
    * @param callback The callback.
-   * @throws Throws if another listener is registered for `event`.
+   * @throws Throws if another listener is registered with the same ID.
    */
   registerListener(event: string, callback: ScriptEventListener): void {
     if (this.listeners.has(event)) {
       throw new Error(
-        `can't register listener for event '${event}': a listener for this event has already been registered`
+        `Failed to register listener '${event}'. A listener with this ID has already been registered.`
       );
     }
+
+    if (!event.includes(":") || event.split(":")[1].startsWith("_")) {
+      throw new Error(
+        `Failed to register listener ''${event}'. Listener IDs must have a namespace and cannot start with an underscore after the namespace.`
+      );
+    }
+
     this.listeners.set(event, callback);
   }
 
@@ -167,7 +174,11 @@ export class Router {
     const serialized = JSON.stringify(options.payload);
     const responseListenerId = this.generateListenerUid();
 
-    if (serialized.length > MAX_MESSAGE_LENGTH) {
+    const actualPayloadLength =
+      // additional character for the space between the response listener ID and the payload
+      serialized.length + responseListenerId.length + 1;
+
+    if (actualPayloadLength > MAX_MESSAGE_LENGTH) {
       return invokeStreamInternal(
         { ...options, payload: serialized },
         this,
@@ -183,11 +194,11 @@ export class Router {
   }
 
   private generateListenerUid(): string {
-    return `${this.uid}:l${(this.listenerUidsGenerated++).toString()}`;
+    return `${this.uid}:__${(this.listenerUidsGenerated++).toString(36)}`;
   }
 
   private generateStreamUid(): string {
-    return this.uid + (this.streamUidsGenerated++).toString();
+    return this.uid + (this.streamUidsGenerated++).toString(36);
   }
 
   private parseRawPayload(rawPayload: string): SerializableValue {

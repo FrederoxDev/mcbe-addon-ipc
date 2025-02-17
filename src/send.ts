@@ -24,7 +24,7 @@ export function sendInternal(
   if (!options.force) {
     if (options.payload.length > MAX_MESSAGE_LENGTH) {
       throw new Error(
-        `can't send event with a message longer than ${MAX_MESSAGE_LENGTH.toString()} characters`
+        `Failed to send event '${options.event}'. The maximum payload length is ${MAX_MESSAGE_LENGTH.toString()} characters.`
       );
     }
   }

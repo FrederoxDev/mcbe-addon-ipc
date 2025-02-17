@@ -20,11 +20,7 @@ export function invokeInternal(
   return new Promise((resolve, reject) => {
     const timeoutId = system.runTimeout(() => {
       router.removeListener(responseListenerId);
-      reject(
-        new Error(
-          `invoke '${options.event}' timed out: did not recieve a response`
-        )
-      );
+      reject(new Error(`Invoke '${options.event}' timed out.`));
     }, 20);
 
     router.registerListener(responseListenerId, (payload) => {
@@ -101,11 +97,7 @@ export function invokeStreamInternal(
     ).finally(() => {
       timeoutId = system.runTimeout(() => {
         router.removeListener(responseListenerId);
-        reject(
-          new Error(
-            `invoke '${options.event}' timed out: did not recieve a response`
-          )
-        );
+        reject(new Error(`Invoke '${options.event}' timed out.`));
       }, 20);
     });
   });

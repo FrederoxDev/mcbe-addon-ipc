@@ -87,7 +87,7 @@ export class Router {
 
     if (!event.includes(":") || event.split(":")[1].startsWith("_")) {
       throw new Error(
-        `Failed to register listener ''${event}'. Listener IDs must have a namespace and cannot start with an underscore after the namespace.`
+        `Failed to register listener '${event}'. Listener IDs must have a namespace and cannot start with an underscore after the namespace.`
       );
     }
 

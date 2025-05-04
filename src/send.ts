@@ -1,18 +1,6 @@
 import { system } from "@minecraft/server";
-import {
-  InternalSendOptions,
-  IpcTypeFlag,
-  overworld,
-  SendOptions,
-} from "./common.js";
+import { InternalSendOptions, IpcTypeFlag, SendOptions } from "./common.js";
 import { MAX_MESSAGE_LENGTH, STREAM_MESSAGE_PADDING } from "./constants.js";
-
-/**
- * @internal
- */
-function sendRaw(event: string, message: string): void {
-  overworld.runCommand(`scriptevent ${event} ${message}`);
-}
 
 /**
  * @internal
@@ -29,7 +17,7 @@ export function sendInternal(
     }
   }
 
-  sendRaw(options.event, flag + options.payload);
+  system.sendScriptEvent(options.event, flag + options.payload);
 }
 
 /**

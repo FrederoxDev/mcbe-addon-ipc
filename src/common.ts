@@ -1,10 +1,3 @@
-import { world } from "@minecraft/server";
-
-/**
- * @internal
- */
-export const overworld = world.getDimension("overworld");
-
 /**
  * @internal
  */

@@ -1,7 +1,7 @@
 {
   "name": "mcbe-addon-ipc",
   "description": "IPC utilities for Minecraft Bedrock add-ons",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "author": "Fluffyalien",
   "repository": {
     "type": "git",
@@ -23,7 +23,7 @@
     "dist"
   ],
   "peerDependencies": {
-    "@minecraft/server": "1.18.0"
+    "@minecraft/server": "^1.18.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.26.0",
